@@ -56,7 +56,17 @@ class PRG:
     def hardcore_predicate(self,seed:int)->bool:
         binary_string = self.convert_to_binary(seed,self.security_parameter)
         return True if binary_string[0] == '1' else False
-     
+    
+    def to_int(self,x:str)->int:
+        """
+        description : converts a binary string to an integer
+        ---
+        parameters:
+        ---
+        x : binary string
+        """
+        return int(x,2)
+    
     def generate(self, seed: int) -> str:
         """
         description : generates a pseudo random bit-string from a uniformly sampled seed
@@ -92,4 +102,3 @@ class PRG:
 #     y = int(input("Enter seed: "))
 #     x = prg.generate(y)
 #     print(x, end=" ")
-#     print(to_int(x))
