@@ -12,7 +12,11 @@ class PRF:
         :param key: k, uniformly sampled key
         :type key: int
         """
-        pass
+        self.security_parameter = security_parameter
+        self.generator = generator
+        self.prime_field = prime_field
+        self.key = key
+        
 
     def evaluate(self, x: int) -> int:
         """
