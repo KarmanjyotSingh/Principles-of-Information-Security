@@ -35,11 +35,15 @@ class PRG:
             # get the binary representation of the string
             binary_string = str(x%2) + binary_string
             x = x//2
+        ig = len(binary_string)
         
-        while len(binary_string) < l:
+        while ig <= l:
+            # print(ig,l)
             # while the length is less than the desired length, pad with 0's
             binary_string = "0" + binary_string
+            ig = ig + 1
         
+        # print(binary_string, " ", len(binary_string))
         return binary_string
     
     def one_way_function(self,seed:int)->int:
@@ -51,11 +55,20 @@ class PRG:
         ---
         seed : uniformly sampled seed
         """
-        return pow(self.generator,seed,self.prime_field)
+        g = self.generator
+        p = self.prime_field
+        return pow(g,seed,p)
 
     def hardcore_predicate(self,seed:int)->bool:
-        binary_string = self.convert_to_binary(seed,self.security_parameter)
-        return True if binary_string[0] == '1' else False
+        """
+        description : implements the hardcore predicate for our PRG
+        ---
+        parameters:
+        ---
+        seed : uniformly sampled seed
+        """
+        p = self.prime_field
+        return 0 if (seed < p//2) else 1
     
     def to_int(self,x:str)->int:
         """
@@ -79,13 +92,10 @@ class PRG:
         # constraining the length of the seed to be 32 bits
         SEED_LENGTH = self.security_parameter
         for l in range(1,self.expansion_factor+1):
-            y = self.one_way_function(seed)
+            y = self.one_way_function(seed) # get the output from the one way function
             pseudo_random_bit_string = self.convert_to_binary(y,SEED_LENGTH)
-            hcp = self.hardcore_predicate(seed)
-            if hcp == True:
-                pseudo_random_bit_string = pseudo_random_bit_string + "1"
-            else:
-                pseudo_random_bit_string = pseudo_random_bit_string + "0"
+            hcp = self.hardcore_predicate(seed) # get the hardcore predicate
+            pseudo_random_bit_string = pseudo_random_bit_string + str(hcp) # append the hardcore predicate to the pseudo random bit string
             seed = y
             SEED_LENGTH = SEED_LENGTH + 1
         return pseudo_random_bit_string
@@ -96,9 +106,9 @@ class PRG:
 # def to_int(x):    
 #     return int(x,2)
 
-# prg = PRG(expansion_factor=7,security_parameter = 32,generator = 41,prime_field = 2**64-59)
+prg = PRG(expansion_factor=7,security_parameter = 32,generator = 41,prime_field = 2**32-59)
 
-# while True:
-#     y = int(input("Enter seed: "))
-#     x = prg.generate(y)
-#     print(x, end=" ")
+while True:
+    y = int(input("Enter seed: "))
+    x = prg.generate(y)
+    print(x)
