@@ -68,7 +68,9 @@ class PRG:
         seed : uniformly sampled seed
         """
         p = self.prime_field
-        return 0 if (seed < p//2) else 1
+        comparator = ((p-1)//2)
+        hcp = 0 if (seed < comparator) else 1
+        return hcp
     
     def to_int(self,x:str)->int:
         """
@@ -93,7 +95,6 @@ class PRG:
         SEED_LENGTH = self.security_parameter
         for l in range(1,self.expansion_factor+1):
             y = self.one_way_function(seed) # get the output from the one way function
-            pseudo_random_bit_string = self.convert_to_binary(y,SEED_LENGTH)
             hcp = self.hardcore_predicate(seed) # get the hardcore predicate
             pseudo_random_bit_string = pseudo_random_bit_string + str(hcp) # append the hardcore predicate to the pseudo random bit string
             seed = y
@@ -106,9 +107,12 @@ class PRG:
 # def to_int(x):    
 #     return int(x,2)
 
-prg = PRG(expansion_factor=7,security_parameter = 32,generator = 41,prime_field = 2**32-59)
+# n = [7,9,7,9,12]
+# g = [13,4,7,35,11]
+# p = [41,11,17,97,29]
+# e = [10,12,11,20,33]
+# s = [17,35,125,263,1058]
 
-while True:
-    y = int(input("Enter seed: "))
-    x = prg.generate(y)
-    print(x)
+# for i in range(len(n)):
+#     prg = PRG(security_parameter=n[i],generator=g[i],prime_field=p[i],expansion_factor=e[i])
+#     print(prg.generate(s[i]))
