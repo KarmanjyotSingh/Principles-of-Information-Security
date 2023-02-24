@@ -92,13 +92,11 @@ class PRG:
         """
         pseudo_random_bit_string = ""
         # constraining the length of the seed to be 32 bits
-        SEED_LENGTH = self.security_parameter
         for l in range(1,self.expansion_factor+1):
             y = self.one_way_function(seed) # get the output from the one way function
             hcp = self.hardcore_predicate(seed) # get the hardcore predicate
             pseudo_random_bit_string = pseudo_random_bit_string + str(hcp) # append the hardcore predicate to the pseudo random bit string
             seed = y
-            SEED_LENGTH = SEED_LENGTH + 1
         return pseudo_random_bit_string
 
 
@@ -116,3 +114,4 @@ class PRG:
 # for i in range(len(n)):
 #     prg = PRG(security_parameter=n[i],generator=g[i],prime_field=p[i],expansion_factor=e[i])
 #     print(prg.generate(s[i]))
+    

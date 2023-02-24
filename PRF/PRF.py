@@ -62,7 +62,7 @@ class PRF:
         r = bin(x)[2:].zfill(self.security_parameter)
         # generate the binary string for k, as random oracle
         initial_seed = self.key
-       
+        
         for bit in r:
             string = self.prg.generate(initial_seed)
             if bit == '0':
@@ -70,6 +70,7 @@ class PRF:
             else :
                 string = self.slice_right(string)
             # string = self.prg.generate(x)
+            # print(bit," ",string)
             initial_seed = int(string,2)
            
         # return the final seed
@@ -94,4 +95,4 @@ class PRF:
 # for i in range(len(n)):
 #     prf = PRF(security_parameter=n[i],generator=g[i],prime_field=p[i],key=k[i])
 #     print(prf.evaluate(s[i]))
-#     # break
+#     break

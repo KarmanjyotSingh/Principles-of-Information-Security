@@ -2,7 +2,8 @@ import sys
 sys.path.append('../PRF')
 from PRF import PRF 
 class CBC_MAC:
-    def __init__(self, security_parameter: int, generator: int,
+    def __init__(self, security_parameter: int, 
+                 generator: int,
                  prime_field: int, keys: list):
         """
         Initialize the values here

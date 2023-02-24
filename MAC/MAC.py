@@ -78,11 +78,11 @@ class MAC:
 
 # [24, 827, 127, 400,"101100101000101000101111",8]
 # [28, 617, 150, 123,"111011101100101001110",2  ]]  
-a = [28, 617, 150, 123,"111011101100101001110",2  ]
-mac = MAC(security_parameter = a[0],
-            prime_field = a[1],
-            generator = a[2],
-            seed = a[3])
-t = mac.mac(a[4],a[5])
-print(t)
-print(mac.vrfy(a[4],t))
+# a = [28, 617, 150, 123,"111011101100101001110",2  ]
+# mac = MAC(security_parameter = a[0],
+#             prime_field = a[1],
+#             generator = a[2],
+#             seed = a[3])
+# t = mac.mac(a[4],a[5])
+# print(t)
+# print(mac.vrfy(a[4],t))

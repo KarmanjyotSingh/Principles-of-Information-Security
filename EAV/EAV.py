@@ -1,3 +1,8 @@
+import sys
+sys.path.append('../PRG')
+from PRG import PRG as prg
+
+# This class implements the eavesdropper adversary
 class Eavesdrop:
     def __init__(self, security_parameter: int, key: int, expansion_factor: int,
                  generator: int, prime_field: int):
@@ -14,7 +19,15 @@ class Eavesdrop:
         :param prime_field: p
         :type prime_field: int
         """
-        pass
+        self.security_parameter = security_parameter
+        self.key = key
+        self.expansion_factor = expansion_factor
+        self.generator = generator
+        self.prime_field = prime_field
+        self.prg = prg( security_parameter = security_parameter,
+                        expansion_factor = expansion_factor, 
+                        prime_field = prime_field, 
+                        generator = generator)
 
     def enc(self, message: str) -> str:
         """
@@ -22,7 +35,18 @@ class Eavesdrop:
         :param message: message encoded as bit-string
         :type message: str
         """
-        pass
+        # generate a uniformly sampled seed
+        key = self.key
+        w = self.prg.generate(key)
+        # print(w)
+        # print(len(w))
+        ret_str = ""
+        for i in range(len(message)):
+            if message[i]==w[i]:
+                ret_str = ret_str + "0"
+            else:
+                ret_str = ret_str + "1"
+        return ret_str
 
     def dec(self, cipher: str) -> str:
         """
@@ -30,4 +54,16 @@ class Eavesdrop:
         :param cipher: ciphertext encoded as bit-string
         :type cipher: str
         """
-        pass
+
+        # generate a uniformly sampled seed
+        key = self.key
+        w = self.prg.generate(key)
+        # print(w)
+        # print(len(w))
+        ret_str = ""
+        for i in range(len(cipher)):
+            if cipher[i]==w[i]:
+                ret_str = ret_str + "0"
+            else:
+                ret_str = ret_str + "1"
+        return ret_str

@@ -4,8 +4,10 @@ from PRF import PRF as prf
 class CPA:
     # This class implements the encryption scheme that is secured against chosen plain text attack
     # CPA is deterministic encryption scheme
-    def __init__(self, security_parameter: int, prime_field: int,
-                 generator: int, key: int, mode="CTR"):
+    def __init__(self, security_parameter: int, 
+                 prime_field: int,
+                 generator: int, key: int, 
+                 mode="CTR"):
         """
         description : implements a CPA encryption scheme
         ---
@@ -39,64 +41,75 @@ class CPA:
         :param random_seed: ctr
         :type random_seed: int
         """
-        n = self.security_parameter
 
-        len_msg = len(message) # length of the message to be encoded 
-        arr = []
+        mode = self.mode
+        n = self.security_parameter
+        
+        l = len(message) # length of the message to be encoded 
         # number of message blocks
         # assume messages to be a multiple of the security parameter 
-        num_blocks = len_msg //n
+        num_blocks = l //n
         cipher_text = bin(random_seed)[2:].zfill(n) 
-        for block in range(0,num_blocks):
-            m_i = message[block*n:(block+1)*n]
-            arr.append(m_i)
-            m_i = int(m_i,2)
-            r_i = random_seed+block+1
-            Fk_r = self.prf.evaluate(r_i)
-            print(m_i," ",Fk_r)
-            y_i = m_i ^ Fk_r
-            cipher_text +=bin(y_i)[2:].zfill(n)
-      
+        if mode == "CTR":    
+            for block in range(0,num_blocks):
+                m_i = message[block*n:(block+1)*n]
+                m_i = int(m_i,2)
+                r_i = random_seed+block+1
+                Fk_r = self.prf.evaluate(r_i)
+                y_i = m_i ^ Fk_r
+                cipher_text +=bin(y_i)[2:].zfill(n)
+        elif mode == "OFB":
+                for block in range(0,num_blocks):
+                    m_i = message[block*n:(block+1)*n]
+                    m_i = int(m_i,2)
+                    r_i = random_seed 
+                    Fk_r = self.prf.evaluate(r_i)
+                    y_i = m_i ^ Fk_r
+                    random_seed = Fk_r
+                    cipher_text +=bin(y_i)[2:].zfill(n)
+        elif mode == "CBC":
+                for block in range(0,num_blocks):
+                    m_i = message[block*n:(block+1)*n]
+                    m_i = int(m_i,2)
+                    r_i = random_seed 
+                    x_i = m_i ^ r_i
+                    Fk_r = self.prf.evaluate(x_i)
+                    y_i = Fk_r
+                    cipher_text +=bin(y_i)[2:].zfill(n)      
+                    random_seed = y_i 
         return cipher_text
-
+        
     def dec(self, cipher: str) -> str:
         """
         Decrypt ciphertext to obtain plaintext message
         :param cipher: ciphertext c
         :type cipher: str
         """
-        l = len(cipher)
-        print(l)
-        l = l//2
         n = self.security_parameter
-        num_blocks = l //n
-        # random seed 
-        r = int(self.prf.slice_left(cipher),2)
-        cipher = self.prf.slice_right(cipher)
+        r_str = cipher[:n]
+        r = int(r_str,2)  # random seed 
+        cipher = cipher[n:]
+        l = len(cipher)
+        num_blocks = l // n
         message = ""
-        for block in range(0,num_blocks):
-            c_i = cipher[block*n:(block+1)*n]
-            r_i = r+block
-            Fk_r = self.prf.evaluate(r_i)
-            m_i = Fk_r ^ int(c_i,2)
-            message+=bin(m_i)[2:].zfill(n)
-        
-        return int(message,2)
-    
-# 11100011011110000000
-# 11100011011110000000
-m = ["1010100011100111","11100011011110000000","101011011101","111000101010","1010100110110110"]
-r = [4,7,5,37,8]
-k = [58,145,113,10,15]
-g = [112,189,217,14,3]
-p = [307,599,881,59,11]
-n = [4,5,6,6,8]
-
-# for i in range(len(m)):
-i = 0
-cpa = CPA(security_parameter = n[i], prime_field = p[i], generator = g[i], key = k[i])
-c = cpa.enc(m[i],r[i])
-print("cipher text",c)
-d = cpa.dec(c)
-print(d)
-# break
+        mode = self.mode
+        if mode == "CTR":     
+            for block in range(0,num_blocks):
+                c_i = cipher[block*n:(block+1)*n]
+                r_i = r+block +1
+                Fk_r = self.prf.evaluate(r_i)
+                m_i = Fk_r ^ int(c_i,2)
+                message+=bin(m_i)[2:].zfill(n)
+        elif mode == "OFB":
+            for block in range(0,num_blocks):
+                c_i = cipher[block*n:(block+1)*n]
+                c_i = int(c_i,2)
+                Fk_r = self.prf.evaluate(r)
+                m_i = Fk_r ^ c_i
+                r = Fk_r
+                message+=bin(m_i)[2:].zfill(n)
+        elif mode == "CBC":
+            for block in range(0,num_blocks):
+                c_i = cipher[block*n:(block+1)*n]
+                c_i = int(c_i,2)
+        return message
